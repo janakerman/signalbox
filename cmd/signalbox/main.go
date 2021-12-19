@@ -2,9 +2,10 @@ package main
 
 import (
 	"errors"
-	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/janakerman/flux-signal-box/internal/receiver"
 )
 
 func main() {
@@ -12,7 +13,7 @@ func main() {
 
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/ready", handleHealth)
-	mux.HandleFunc("/receive", handleReceive)
+	mux.HandleFunc("/receive", receiver.HandleReceive)
 
 	err := http.ListenAndServe(":80", mux)
 	if !errors.Is(err, http.ErrServerClosed) {
@@ -21,18 +22,5 @@ func main() {
 }
 
 func handleHealth(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(200)
-}
-
-func handleReceive(w http.ResponseWriter, r *http.Request) {
-
-	if r.Body != nil {
-		b, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Println(err)
-		}
-		log.Println(string(b))
-	}
-
 	w.WriteHeader(200)
 }
