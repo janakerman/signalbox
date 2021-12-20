@@ -12,3 +12,7 @@ func MustParam(r *http.Request, param string) (string, error) {
 	}
 	return v, nil
 }
+
+func Param(r *http.Request, param string) string {
+	return r.URL.Query().Get(param)
+}

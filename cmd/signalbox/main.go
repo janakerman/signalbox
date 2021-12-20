@@ -15,17 +15,13 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", handleHealth)
-	mux.HandleFunc("/ready", handleHealth)
+	mux.HandleFunc("/health", handlers.Health)
+	mux.HandleFunc("/ready", handlers.Health)
 	mux.Handle("/receive", handlers.Handler{Env: env, H: handlers.ReceiveNotification})
-	mux.Handle("/events", handlers.Handler{Env: env, H: handlers.Events})
+	mux.Handle("/notifications", handlers.Handler{Env: env, H: handlers.Notification})
 
 	err := http.ListenAndServe(":80", mux)
 	if !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalln(err)
 	}
-}
-
-func handleHealth(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(200)
 }
