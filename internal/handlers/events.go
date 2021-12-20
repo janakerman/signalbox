@@ -23,7 +23,7 @@ func Events(env Env, w http.ResponseWriter, r *http.Request) error {
 		return StatusError{Code: 400, Err: err}
 	}
 
-	notifications, err := env.Store.Get(kind, namespace, name, revision)
+	notifications, err := env.Store.GetByObject(kind, namespace, name, revision)
 	if err != nil {
 		return err
 	}

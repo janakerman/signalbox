@@ -3,7 +3,8 @@ package receiver
 import "strings"
 
 type NotificationStore interface {
-	Get(kind, namespace, name, revision string) ([]Notification, error)
+	GetByObject(kind, namespace, name, revision string) ([]Notification, error)
+	GetByRevision(revision string) ([]Notification, error)
 	Write(n Notification) error
 }
 
@@ -14,23 +15,29 @@ type notificationKey struct {
 }
 
 type InMemoryStore struct {
-	s map[notificationKey][]Notification
+	byObject   map[notificationKey][]Notification
+	byRevision map[string][]Notification
 }
 
 func NewInMemoryStore() *InMemoryStore {
 	return &InMemoryStore{
-		s: map[notificationKey][]Notification{},
+		byObject:   map[notificationKey][]Notification{},
+		byRevision: map[string][]Notification{},
 	}
 }
 
-func (s *InMemoryStore) Get(kind, namespace, name, revision string) ([]Notification, error) {
+func (s *InMemoryStore) GetByObject(kind, namespace, name, revision string) ([]Notification, error) {
 	key := notificationKey{
 		kind:      kind,
 		namespace: namespace,
 		name:      name,
 		revision:  revision,
 	}
-	return s.s[key], nil
+	return s.byObject[key], nil
+}
+
+func (s *InMemoryStore) GetByRevision(revision string) ([]Notification, error) {
+	return s.byRevision[revision], nil
 }
 
 func (s *InMemoryStore) Write(n Notification) error {
@@ -50,6 +57,7 @@ func (s *InMemoryStore) Write(n Notification) error {
 		revision:  revision,
 	}
 
-	s.s[key] = append(s.s[key], n)
+	s.byObject[key] = append(s.byObject[key], n)
+	s.byRevision[revision] = append(s.byRevision[revision], n)
 	return nil
 }
