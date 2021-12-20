@@ -33,11 +33,21 @@ func (s *InMemoryStore) GetByObject(kind, namespace, name, revision string) ([]N
 		name:      name,
 		revision:  revision,
 	}
-	return s.byObject[key], nil
+
+	ns := s.byObject[key]
+	if ns == nil {
+		ns = []Notification{}
+	}
+
+	return ns, nil
 }
 
 func (s *InMemoryStore) GetByRevision(revision string) ([]Notification, error) {
-	return s.byRevision[revision], nil
+	ns := s.byRevision[revision]
+	if ns == nil {
+		ns = []Notification{}
+	}
+	return ns, nil
 }
 
 func (s *InMemoryStore) Write(n Notification) error {

@@ -1,13 +1,16 @@
 package handlers
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/janakerman/flux-signal-box/internal/receiver"
 )
+
+type NotificationResponse struct {
+	Notifications []receiver.Notification
+}
 
 func Notification(env Env, w http.ResponseWriter, r *http.Request) error {
 	revision, err := MustParam(r, "revision")
@@ -18,7 +21,7 @@ func Notification(env Env, w http.ResponseWriter, r *http.Request) error {
 	namespace := Param(r, "namespace")
 	name := Param(r, "name")
 
-	if !(kind == "" && namespace == "" && name == "") || (kind == "" || namespace == "" || name == "") {
+	if !(kind == "" && namespace == "" && name == "") && (kind == "" || namespace == "" || name == "") {
 		return StatusError{Code: 400, Err: fmt.Errorf("kind, namespace, name are required params")}
 	}
 
@@ -32,12 +35,16 @@ func Notification(env Env, w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	b, err := json.Marshal(ns)
+	res := NotificationResponse{
+		Notifications: ns,
+	}
+
+	b, err := json.Marshal(res)
 	if err != nil {
 		return err
 	}
 
-	err = r.Write(bytes.NewBuffer(b))
+	_, err = w.Write(b)
 	if err != nil {
 		return err
 	}
