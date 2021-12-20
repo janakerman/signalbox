@@ -46,7 +46,5 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, http.StatusText(http.StatusInternalServerError),
 				http.StatusInternalServerError)
 		}
-	} else {
-		w.WriteHeader(200)
 	}
 }
