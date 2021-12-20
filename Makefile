@@ -3,9 +3,6 @@ DOCKER_TAG:="janakerman/signalbox:${COMMIT_SHA}"
 
 default: build test
 
-echo:
-	echo $(DOCKER_TAG)
-
 .PHONY: build
 build:
 	GOOS=linux go build -o bin/signalbox cmd/signalbox/main.go
