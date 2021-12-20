@@ -40,7 +40,7 @@ func Test_Notification_RevisionWithMissingParams(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, rr.Code)
 }
 
-func Test_Notification_NonExitentRevision(t *testing.T) {
+func Test_Notification_RevisionDoesNotExist(t *testing.T) {
 	rr := httptest.NewRecorder()
 	env := handlers.Env{receiver.NewInMemoryStore()}
 

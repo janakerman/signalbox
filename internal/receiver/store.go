@@ -1,10 +1,14 @@
 package receiver
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type NotificationStore interface {
 	GetByObject(kind, namespace, name, revision string) ([]Notification, error)
 	GetByRevision(revision string) ([]Notification, error)
+	GetByHash(revision string) ([]Notification, error)
 	Write(n Notification) error
 }
 
@@ -17,12 +21,14 @@ type notificationKey struct {
 type InMemoryStore struct {
 	byObject   map[notificationKey][]Notification
 	byRevision map[string][]Notification
+	byHash     map[string][]Notification
 }
 
 func NewInMemoryStore() *InMemoryStore {
 	return &InMemoryStore{
 		byObject:   map[notificationKey][]Notification{},
 		byRevision: map[string][]Notification{},
+		byHash:     map[string][]Notification{},
 	}
 }
 
@@ -50,6 +56,14 @@ func (s *InMemoryStore) GetByRevision(revision string) ([]Notification, error) {
 	return ns, nil
 }
 
+func (s *InMemoryStore) GetByHash(revision string) ([]Notification, error) {
+	ns := s.byHash[revision]
+	if ns == nil {
+		ns = []Notification{}
+	}
+	return ns, nil
+}
+
 func (s *InMemoryStore) Write(n Notification) error {
 	var revision string
 
@@ -69,5 +83,13 @@ func (s *InMemoryStore) Write(n Notification) error {
 
 	s.byObject[key] = append(s.byObject[key], n)
 	s.byRevision[revision] = append(s.byRevision[revision], n)
+
+	split := strings.Split(revision, "/")
+	if len(split) != 2 {
+		return fmt.Errorf("unexpected revision format '%s'", revision)
+	}
+
+	s.byHash[split[1]] = append(s.byHash[revision], n)
+
 	return nil
 }
