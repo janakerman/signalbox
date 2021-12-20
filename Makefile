@@ -19,8 +19,8 @@ docker.build: build
 	docker build -t $(DOCKER_TAG) .
 
 .PHONY: docker.login
-docker.login: docker.publish
-	echo -n $(DOCKER_TOKEN) | docker login --username $(DOCKER_USERNAME) --password-stdin
+docker.login:
+	echo ${DOCKER_TOKEN} | docker login --username ${DOCKER_USERNAME} --password-stdin
 
 .PHONY: docker.publish
 docker.publish: docker.login docker.build
