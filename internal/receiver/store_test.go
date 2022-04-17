@@ -2,6 +2,7 @@ package receiver
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -44,6 +45,8 @@ func Test_InMemoryStore_Empty(t *testing.T) {
 
 func Test_InMemoryStore_Write(t *testing.T) {
 	s := NewInMemoryStore()
+	
+	time.Sleep(2*time.Minute)
 
 	err := s.Write(GitRepositoryEvent)
 	require.NoError(t, err)
