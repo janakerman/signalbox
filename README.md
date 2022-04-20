@@ -1,6 +1,6 @@
  
 
-Goals:
+Goals: 
 * To act as a central knowledge base for deployment events
 * To abstract the need to handle Flux notifications away from interested parties
 * To support pipelines that depend on the progress of Flux deployments 
